@@ -1,2 +1,59 @@
 ---
 # Role tasks
+
+- block:
+    - name: setup fact with certificates load from host variables
+      set_fact:
+        ca_certificates_hostvars_certs: >-
+          {{ lookup('template', 'hostvars_certs.yml.j2') | from_yaml }}
+
+    - name: setup fact with certificates that will be managed
+      set_fact:
+        ca_certificates_managed: >-
+          {{ (ca_certificates_load_from_hostvars
+              and not ca_certificates_hostvars_certs is string)
+              | ternary([ ca_certificates_hostvars_certs ] | flatten
+                        + ca_certificates,
+                        ca_certificates) }}
+    - block:
+        - name: add certificates to system anchors dir
+          copy:
+            dest: "{{ source }}/anchors/{{ cert.alias }}.pem"
+            content: "{{ cert.pem }}"
+          register: ca_certificates_add_result
+          loop: >-
+            {{ ca_certificates_managed
+               | selectattr("state", "equalto", "present")
+               | list }}
+          loop_control:
+            loop_var: cert
+            label: "{{ cert.alias }}"
+
+        - name: remove certificates from system anchors dir
+          file:
+            path: "{{ source }}/anchors/{{ cert.alias }}.pem"
+            state: absent
+          register: ca_certificates_remove_result
+          loop: >-
+            {{ ca_certificates_managed
+               | selectattr("state", "equalto", "absent")
+               | list }}
+          loop_control:
+            loop_var: cert
+            label: "{{ cert.alias }}"
+      vars:
+        source: >-
+          {{ (cert.priority | default("low") == "high")
+             | ternary(ca_certificates_high_priority_source,
+                       ca_certificates_low_priority_source) }}
+
+    - name: rebuild the certificates trust database
+      shell: "update-ca-trust extract"
+      when:
+        (ca_certificates_add_result.results
+         + ca_certificates_remove_result.results)
+        | select("changed")
+        | list
+        | length > 0
+  tags:
+    - role::ca_certificates
