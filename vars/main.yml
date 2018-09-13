@@ -1,2 +1,5 @@
 ---
 # Role variables
+
+ca_certificates_low_priority_source: /usr/share/pki/ca-trust-source
+ca_certificates_high_priority_source: /etc/pki/ca-trust/source
