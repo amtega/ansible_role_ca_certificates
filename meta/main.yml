@@ -2,6 +2,7 @@
 # Role dependencies
 
 galaxy_info:
+  role_name: ca_certificates
   author: Juan Antonio Valiño García
   description: Deploy CA certificates on the system
   company: AMTEGA - Xunta de Galicia
