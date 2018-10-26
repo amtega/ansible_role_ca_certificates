@@ -2,7 +2,7 @@
 # Role tasks
 
 - block:
-    - name: setup fact with certificates load from host variables
+    - name: setup fact with certificates loaded from host variables
       set_fact:
         ca_certificates_hostvars_certs: >-
           {{ lookup('template', 'hostvars_certs.yml.j2') | from_yaml }}
