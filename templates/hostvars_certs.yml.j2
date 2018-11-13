@@ -1,7 +1,0 @@
-{{ ansible_managed | comment }}
-
-{% for v in hostvars[inventory_hostname] %}
-{% if v is search("^cert_.*") and hostvars[inventory_hostname][v]['alias'] is defined -%}
-- {{ hostvars[inventory_hostname][v] | to_yaml }}
-{% endif %}
-{% endfor %}
