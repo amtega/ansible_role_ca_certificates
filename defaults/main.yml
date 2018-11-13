@@ -20,9 +20,15 @@
 
 ca_certificates: []
 
-# Indicate if certificate list must be loaded also from host variables.
-# Any host variable that begins with "cert_" and contains "alias" attribute will
-# be loaded as certificate to manage by the role. The variables must follow
-# the dict structure detailed before for the `ca_certificates` list.
+# Indicate if certificate list must be loaded also from host variables. Any host
+# variable that begins with the pattern specified in
+# `ca_certificates_hostvars_pattern` and contains "alias" attribute will be
+# loaded as certificate to manage by the role. The variables must follow the
+# dict structure detailed before for the `ca_certificates` list.
 
 ca_certificates_load_from_hostvars: true
+
+# Pattern that hostvars must match to be selected if
+# `ca_certificates_load_from_hostvars` is true
+
+ca_certificates_hostvars_pattern: "cert_.*"

@@ -7,19 +7,30 @@ galaxy_info:
   description: Deploy CA certificates on the system
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
-  min_ansible_version: 2.6
+  min_ansible_version: 2.7
   platforms:
-  - name: Fedora
-    versions:
-      - 27
-      - 28
-  - name: EL
-    versions:
-      - 6
-      - 7
+    - name: EL
+      versions:
+        - 6
+        - 7
+    - name: Fedora
+      versions:
+        - 27
+        - 28
   galaxy_tags:
     - system
     - certificates
     - security
 
-  dependencies: []
+dependencies:
+  - role: amtega.check_platform
+    check_platform_distributions:
+      centos: 6
+      fedora: 27
+      rhel: 6
+
+  - role: amtega.select_hostvars
+    select_hostvars_pattern: "{{ ca_certificates_hostvars_pattern }}"
+    select_hostvars_attributes: ['alias']
+    select_hostvars_fact_name: ca_certificates_hostvars_certs
+    select_hostvars_output_type: list
