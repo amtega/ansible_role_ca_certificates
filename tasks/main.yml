@@ -43,7 +43,7 @@
                        ca_certificates_low_priority_source) }}
 
     - name: Rebuild the certificates trust database
-      shell: "update-ca-trust extract"
+      command: "update-ca-trust extract"
       when:
         (ca_certificates_add_result.results
          + ca_certificates_remove_result.results)
