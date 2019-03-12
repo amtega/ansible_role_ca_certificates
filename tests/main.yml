@@ -1,7 +1,7 @@
 ---
 # Tasks for testing role
 
-- name: configure docker sandbox environment
+- name: Configure docker sandbox environment
   hosts: localhost
   roles:
     - role: amtega.docker_presets
@@ -13,7 +13,7 @@
   tags:
     - sandbox
 
-- name: run idempotence test
+- name: Run idempotence test
   hosts: localhost
   roles:
     - role: amtega.docker_sandbox
@@ -21,7 +21,7 @@
   tags:
     - sandbox
 
-- name: test ca_certificates role certificates provisioning
+- name: Test ca_certificates role certificates provisioning
   hosts: docker_sandbox_containers
   roles:
     - amtega.ca_certificates
@@ -125,17 +125,17 @@
           -----END CERTIFICATE-----
 
   tasks:
-    - name: check mysql testing certificate 1
+    - name: Check mysql testing certificate 1
       stat:
         path: "/etc/pki/ca-trust/source/anchors/mozilla.pem"
       register: check_certificate1_result
 
-    - name: check mysql testing certificate 2
+    - name: Check mysql testing certificate 2
       stat:
         path: "/usr/share/pki/ca-trust-source/anchors/debian.pem"
       register: check_certificate2_result
 
-    - name: check that certificates were installed
+    - name: Check that certificates were installed
       assert:
         that:
           - check_certificate1_result.stat.exists
@@ -143,7 +143,7 @@
   tags:
     - idempotence
 
-- name: test ca_certificates role certificates removal
+- name: Test ca_certificates role certificates removal
   hosts: docker_sandbox_containers
   roles:
     - amtega.ca_certificates
@@ -159,23 +159,23 @@
         state: absent
         priority: low
   tasks:
-    - name: check mysql testing certificate 1
+    - name: Check mysql testing certificate 1
       stat:
         path: "/etc/pki/ca-trust/source/anchors/mozilla.pem"
       register: check_certificate1_result
 
-    - name: check mysql testing certificate 2
+    - name: Check mysql testing certificate 2
       stat:
         path: "/usr/share/pki/ca-trust-source/anchors/debian.pem"
       register: check_certificate2_result
 
-    - name: check that certificates were removed
+    - name: Check that certificates were removed
       assert:
         that:
           - not check_certificate1_result.stat.exists
           - not check_certificate1_result.stat.exists
 
-- name: cleanup docker sandbox
+- name: Cleanup docker sandbox
   hosts: localhost
   roles:
     - role: amtega.docker_sandbox
