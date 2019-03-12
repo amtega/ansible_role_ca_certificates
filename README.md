@@ -2,21 +2,12 @@
 
 This is an [Ansible](http://www.ansible.com) role to deploy CA certificates on the system.
 
-## Requirements
-
-[Ansible 2.7+](http://docs.ansible.com/ansible/latest/intro_installation.html)
-
 ## Role Variables
 
 A list of all the default variables for this role is available in `defaults/main.yml`. The role setups the following facts:
 
-- ca_certificates_hostvars_certs: list of certificates loaded from host vars.
-- ca_certificates_managed: list of certificates managed by the role.
-
-## Dependencies
-
-- [amtega.check_platform](https://galaxy.ansible.com/amtega/check_platform)
-- [amtega.select_hostvars](https://galaxy.ansible.com/amtega/select_hostvars)
+- `ca_certificates_hostvars_certs`: list of certificates loaded from host vars.
+- `ca_certificates_managed`: list of certificates managed by the role.
 
 ## Example Playbook
 

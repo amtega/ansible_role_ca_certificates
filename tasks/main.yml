@@ -2,7 +2,7 @@
 # Role tasks
 
 - block:
-    - name: setup fact with certificates that will be managed
+    - name: Setup fact with certificates that will be managed
       set_fact:
         ca_certificates_managed: >-
           {{ (ca_certificates_load_from_hostvars
@@ -11,7 +11,7 @@
                         + ca_certificates,
                         ca_certificates) }}
     - block:
-        - name: add certificates to system anchors dir
+        - name: Add certificates to system anchors dir
           copy:
             dest: "{{ source }}/anchors/{{ cert.alias }}.pem"
             content: "{{ cert.pem }}"
@@ -24,7 +24,7 @@
             loop_var: cert
             label: "{{ cert.alias }}"
 
-        - name: remove certificates from system anchors dir
+        - name: Remove certificates from system anchors dir
           file:
             path: "{{ source }}/anchors/{{ cert.alias }}.pem"
             state: absent
@@ -42,7 +42,7 @@
              | ternary(ca_certificates_high_priority_source,
                        ca_certificates_low_priority_source) }}
 
-    - name: rebuild the certificates trust database
+    - name: Rebuild the certificates trust database
       shell: "update-ca-trust extract"
       when:
         (ca_certificates_add_result.results
