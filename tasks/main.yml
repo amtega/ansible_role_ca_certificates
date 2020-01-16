@@ -1,23 +1,6 @@
 ---
 # Role tasks
 
-- include_role:
-    name: amtega.check_platform
-  vars:
-    check_platform_distributions:
-      centos: 6
-      fedora: 27
-      rhel: 6
-
-- include_role:
-    name: amtega.select_hostvars
-  vars:
-    select_hostvars_query:
-      pattern: "{{ ca_certificates_hostvars_pattern }}"
-      attributes: ['alias']
-      fact_name: ca_certificates_hostvars_certs
-      output_type: list
-
 - block:
     - name: Setup fact with certificates that will be managed
       set_fact:
