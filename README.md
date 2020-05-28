@@ -30,6 +30,10 @@ This is an example playbook:
           -----END CERTIFICATE-----
 ```
 
+## Playbooks
+
+The playbook `files/export.yml` allows you to export the inventory certificates into a directory of your choice.
+
 ## Testing
 
 Tests are based on docker containers. You can setup docker engine quickly using the playbook `files/setup.yml` available in the role [amtega.docker_engine](https://galaxy.ansible.com/amtega/docker_engine).

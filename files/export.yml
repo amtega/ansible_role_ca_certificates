@@ -1,0 +1,71 @@
+---
+
+# Export certificates
+
+- name: Gather info
+  hosts: localhost
+  vars_prompt:
+    - name: target_host
+      prompt: Host where to export certificates
+      private: no
+
+    - name: target_dir
+      prompt: Directory to put certificates exported
+      private: no
+
+    - name: ca_certificates_hostvars_pattern
+      prompt: Certificates host vars pattern
+      default: "cert_.*"
+      private: no
+  tasks:
+    - name: Setup fact with gathered info
+      set_fact:
+        target_host: "{{ target_host }}"
+        target_dir: "{{ target_dir }}"
+        ca_certificates_hostvars_pattern: >-
+          {{ ca_certificates_hostvars_pattern }}
+
+- name: Export certificates
+  hosts: "{{ hostvars.localhost.target_host }}"
+  roles:
+    - role: amtega.select_hostvars
+      vars:
+        select_hostvars_query:
+          pattern: "{{ hostvars.localhost.ca_certificates_hostvars_pattern }}"
+          attributes: ['alias']
+          fact_name: ca_certificates_hostvars_certs
+          output_type: list
+  tasks:
+    - name: Setup fact with certificates that will be managed
+      set_fact:
+        ca_certificates_managed: >-
+          {{ (ca_certificates_load_from_hostvars
+              and not ca_certificates_hostvars_certs is string)
+              | ternary([ ca_certificates_hostvars_certs ] | flatten
+                        + ca_certificates | default([]),
+                        ca_certificates | default([])) }}
+
+    - block:
+        - name: Create directories for export
+          file:
+            path: "{{ directory_item }}"
+            state: directory
+          loop:
+            - "{{ directory }}/present"
+            - "{{ directory }}/absent"
+          loop_control:
+            loop_var: directory_item
+
+        - name: Export certificates
+          copy:
+            dest: "{{ directory }}/{{ cert.state }}/{{ cert.alias }}.pem"
+            content: "{{ cert.pem }}"
+          loop: "{{ ca_certificates_managed }}"
+          loop_control:
+            loop_var: cert
+            label: "{{ cert.alias }}"
+          vars:
+            target_directory: >-
+              {{ (cert.state == "present") |  }}
+      vars:
+        directory: "{{ hostvars.localhost.target_dir }}"
