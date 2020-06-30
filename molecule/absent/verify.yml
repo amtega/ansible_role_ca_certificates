@@ -1,0 +1,21 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  tasks:
+    - name: Check mysql testing certificate 1
+      stat:
+        path: "/etc/pki/ca-trust/source/anchors/mozilla.pem"
+      register: check_certificate1_result
+
+    - name: Check mysql testing certificate 2
+      stat:
+        path: "/usr/share/pki/ca-trust-source/anchors/debian.pem"
+      register: check_certificate2_result
+
+    - name: Check that certificates were removed
+      assert:
+        that:
+          - not check_certificate1_result.stat.exists
+          - not check_certificate1_result.stat.exists
