@@ -39,8 +39,8 @@
       vars:
         source: >-
           {{ (cert.priority | default("low") == "high")
-             | ternary(ca_certificates_high_priority_source,
-                       ca_certificates_low_priority_source) }}
+             | ternary(ca_certificates_high_priority_anchor_dir,
+                       ca_certificates_low_priority_anchor_dir) }}
 
     - name: Rebuild the certificates trust database
       command: "update-ca-trust extract"
