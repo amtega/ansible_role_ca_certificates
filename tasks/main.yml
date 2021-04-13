@@ -10,10 +10,11 @@
               | ternary([ ca_certificates_hostvars_certs ] | flatten
                         + ca_certificates,
                         ca_certificates) }}
+
     - block:
         - name: Add certificates to system anchors dir
           copy:
-            dest: "{{ source }}/anchors/{{ cert.alias }}.pem"
+            dest: "{{ source }}/{{ cert.alias }}.pem"
             content: "{{ cert.pem }}"
           register: ca_certificates_add_result
           loop: >-
@@ -26,7 +27,7 @@
 
         - name: Remove certificates from system anchors dir
           file:
-            path: "{{ source }}/anchors/{{ cert.alias }}.pem"
+            path: "{{ source }}/{{ cert.alias }}.pem"
             state: absent
           register: ca_certificates_remove_result
           loop: >-
@@ -39,8 +40,8 @@
       vars:
         source: >-
           {{ (cert.priority | default("low") == "high")
-             | ternary(ca_certificates_high_priority_anchor_dir,
-                       ca_certificates_low_priority_anchor_dir) }}
+             | ternary(ca_certificates_high_priority_anchors_dir,
+                       ca_certificates_low_priority_anchors_dir) }}
 
     - name: Rebuild the certificates trust database
       command: "update-ca-trust extract"
