@@ -22,8 +22,8 @@ ca_certificates: []
 
 # Anchor directories
 
-ca_certificates_low_priority_anchor_dir: /usr/share/pki/ca-trust-source
-ca_certificates_high_priority_anchor_dir: /etc/pki/ca-trust/source
+ca_certificates_low_priority_anchors_dir: /usr/share/pki/ca-trust-source/anchors
+ca_certificates_high_priority_anchors_dir: /etc/pki/ca-trust/source/anchors
 
 # Indicate if certificate list must be loaded also from host variables. Any host
 # variable that begins with the pattern specified in
