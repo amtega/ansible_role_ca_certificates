@@ -3,6 +3,7 @@
 
 galaxy_info:
   role_name: ca_certificates
+  namespace: amtega
   author: Juan Antonio Valiño García
   description: Deploy CA certificates on the system
   company: AMTEGA - Xunta de Galicia
