@@ -20,6 +20,8 @@
 
 ca_certificates: []
 
+ca_certificates_artifact_defaults: {}
+
 # Anchor directories
 
 ca_certificates_low_priority_anchors_dir: /usr/share/pki/ca-trust-source/anchors
