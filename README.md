@@ -20,14 +20,23 @@ This is an example playbook:
     - amtega.ca_certificates
   vars:
     ca_certificates:
-      - alias: myca    
-        description: My CA certificate     
+      - alias: myca
+        description: My CA certificate
         state: present                     
         priority: high                     
         pem: |                             
           -----BEGIN CERTIFICATE-----
           ...
           -----END CERTIFICATE-----
+      - alias: example
+        description: Example certificate
+        state: present                     
+        priority: low                     
+        artifact:                         
+          type: https
+          host: https://example.com
+          path: /
+          file: ExampleGlobalRootCA.crt.pem
 ```
 
 ## Playbooks

@@ -6,19 +6,33 @@
 #
 # {
 #
-#   alias: myca                         # Alias for the certificate. Will be
-#                                       # used as the base for PEM file name
-#   description: My CA certificate      # Description of the certificate
-#   state: present                      # State can be present or absent
-#   priority: high                      # Priorioty of the certifcate. Can be
-#                                       # high or low. This determines where the
-#                                       # PEM file will be placed on filesystem
-#   pem: |                              # Certificate content in PEM format
+#   alias: myca                      # Alias for the certificate. Will be
+#                                    # used as the base for PEM file name
+#   description: My CA certificate   # Description of the certificate
+#   state: present                   # State can be present or absent
+#   priority: high                   # Priorioty of the certifcate. Can be
+#                                    # high or low. This determines where the
+#                                    # PEM file will be placed on filesystem
+#   # Certificate content in PEM format, could be ONE of this options:
+#   #   1️⃣ inline: Using "pem" variable
+#   #   2️⃣ using an aartifact: Using "artifact" variable
+#   pem: |                           # 1️⃣ Inline certificate in PEM format
 #     -----BEGIN CERTIFICATE-----
 #     ...
 #     -----END CERTIFICATE-----
+#
+#   artifact:                         # 2️⃣ File artifact containing certificate
+#     type: https
+#     host: https://example.com
+#     path: /
+#     file: ExampleGlobalRootCA.crt.pem
 
 ca_certificates: []
+
+# Default artifact attributes to combine with the ones defined inside the
+# variable ca_certificates[*],artifact. This is useful if you want to avoid
+# copy & paste common artifact attributes when calling the rol with several
+# artifacts
 
 ca_certificates_artifact_defaults: {}
 
