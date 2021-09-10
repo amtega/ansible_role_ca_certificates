@@ -22,10 +22,7 @@
       loop_control:
         loop_var: cert
         label: "{{ cert.alias }}"
-      copy:
-        dest: "{{ source }}/{{ cert.alias }}.pem"
-        content: "{{ cert.pem }}"
-      register: ca_certificates_add_result
+      include_tasks: add_certificate.yml
 
     - name: Remove certificates from system anchors dir
       loop: >-
@@ -42,11 +39,12 @@
 
     - name: Rebuild the certificates trust database
       when:
-        (ca_certificates_add_result.results
-         + ca_certificates_remove_result.results)
+        _ca_certificates_needs_rebuild | default(False)
+        or ca_certificates_remove_result.results
         | select("changed")
         | list
         | length > 0
       command: "update-ca-trust extract"
+
   tags:
     - role::ca_certificates
