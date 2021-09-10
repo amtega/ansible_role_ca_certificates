@@ -15,10 +15,6 @@
                    ca_certificates_low_priority_anchors_dir) }}
   block:
     - name: Add certificates to system anchors dir
-      copy:
-        dest: "{{ source }}/{{ cert.alias }}.pem"
-        content: "{{ cert.pem }}"
-      register: ca_certificates_add_result
       loop: >-
         {{ ca_certificates_managed
            | selectattr("state", "equalto", "present")
@@ -26,12 +22,12 @@
       loop_control:
         loop_var: cert
         label: "{{ cert.alias }}"
+      copy:
+        dest: "{{ source }}/{{ cert.alias }}.pem"
+        content: "{{ cert.pem }}"
+      register: ca_certificates_add_result
 
     - name: Remove certificates from system anchors dir
-      file:
-        path: "{{ source }}/{{ cert.alias }}.pem"
-        state: absent
-      register: ca_certificates_remove_result
       loop: >-
         {{ ca_certificates_managed
            | selectattr("state", "equalto", "absent")
@@ -39,14 +35,18 @@
       loop_control:
         loop_var: cert
         label: "{{ cert.alias }}"
+      file:
+        path: "{{ source }}/{{ cert.alias }}.pem"
+        state: absent
+      register: ca_certificates_remove_result
 
     - name: Rebuild the certificates trust database
-      command: "update-ca-trust extract"
       when:
         (ca_certificates_add_result.results
          + ca_certificates_remove_result.results)
         | select("changed")
         | list
         | length > 0
+      command: "update-ca-trust extract"
   tags:
     - role::ca_certificates
