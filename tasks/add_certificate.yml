@@ -2,9 +2,10 @@
   copy:
     dest: "{{ source }}/{{ cert.alias }}.pem"
     content: "{{ cert.pem }}"
+    mode: '0600'
   register: ca_certificates_add_result
 
-- name:
+- name: Add rebuild needed flag fact
   set_fact:
     _ca_certificates_needs_rebuild: >-
       ca_certificates_add_result is changed
