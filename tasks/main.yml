@@ -46,5 +46,11 @@
         | length > 0
       command: "update-ca-trust extract"
 
+    - name: Clean internal fact values
+      vars:
+        ca_certificates_internal_facts:
+          - _ca_certificates_needs_rebuild
+      include_tasks: clean_facts.yml
+
   tags:
     - role::ca_certificates

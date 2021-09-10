@@ -1,0 +1,8 @@
+---
+
+- name: Clean internal fact values
+  loop: "{{ ca_certificates_internal_facts }}"
+  loop_control:
+    loop_var: fact
+  set_fact:
+    "{{ fact }}":
