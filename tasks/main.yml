@@ -35,22 +35,7 @@
       file:
         path: "{{ source }}/{{ cert.alias }}.pem"
         state: absent
-      register: ca_certificates_remove_result
-
-    - name: Rebuild the certificates trust database
-      when:
-        _ca_certificates_needs_rebuild | default(False)
-        or ca_certificates_remove_result.results
-        | select("changed")
-        | list
-        | length > 0
-      command: "update-ca-trust extract"
-
-    - name: Clean internal fact values
-      vars:
-        ca_certificates_internal_facts:
-          - _ca_certificates_needs_rebuild
-      include_tasks: clean_facts.yml
+      notify: rebuild certificates
 
   tags:
     - role::ca_certificates

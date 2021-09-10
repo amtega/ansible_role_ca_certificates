@@ -1,0 +1,6 @@
+---
+# Role handlers
+
+- name: Rebuild the certificates trust database
+  listen: rebuild certificates
+  command: "update-ca-trust extract"
