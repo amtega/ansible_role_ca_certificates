@@ -41,8 +41,11 @@ provisioner:
       molecule_hosts:
         vars:
           ca_certificates:
-            - alias: mozilla
-              description: Mozilla
+            - description: Mozilla
+              # this test needs alias to be extracted from
+              #   `openssl x509 -inform PEM -noout -alias`
+              # for verification to work
+              alias: mozilla.org
               state: present
               priority: high
               pem: |
@@ -92,7 +95,7 @@ provisioner:
                 +vjtOafBNN6UdLa4WjRX+JnX5wIANzL9azCzLUc=
                 -----END CERTIFICATE-----
 
-            - alias: debian
+            - alias: www.debian.org
               description: Debian
               state: present
               priority: low
