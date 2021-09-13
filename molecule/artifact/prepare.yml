@@ -1,0 +1,35 @@
+---
+
+- name: Prepare
+  hosts: molecule_prepare_hosts
+  gather_facts: yes
+  tasks:
+    - name: Create temporary directory
+      tempfile:
+        state: directory
+        suffix: tmp
+      register: create_tempdir_result
+
+    - name: Copy certificate examples
+      vars:
+        reference_host: "{{ groups['molecule_hosts'] | first }}"
+      loop: "{{ hostvars[reference_host].ca_certificates }}"
+      loop_control:
+        loop_var: cert
+        label: "{{ cert.alias }}"
+      copy:
+        src: "{{ cert.artifact.file }}"
+        dest: "{{ create_tempdir_result.path }}"
+        mode: '0644'
+
+    - name: Publish certificate examples via http port 8000
+      vars:
+        http_server_invocation: >-
+          {{ (ansible_facts.distribution | lower in ["centos", "rhel"]
+          and ansible_facts.distribution_major_version is version("7", "="))
+          | ternary('python2 -m SimpleHTTPServer', 'python3 -m http.server') }}
+      shell: "nohup {{ http_server_invocation }} &"
+      args:
+        chdir: "{{ create_tempdir_result.path }}"
+      changed_when: yes
+      register: http_server_invocation_result
