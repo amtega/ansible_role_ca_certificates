@@ -1,0 +1,12 @@
+---
+
+- name: Converge
+  hosts: molecule_hosts
+  gather_facts: no
+  pre_tasks:
+    - name: Gather facts from all hosts
+      include_tasks: includes/gather_all_hosts_facts.yml
+  tasks:
+    - name: Execute role amtega.ca_certificates
+      include_role:
+        name: amtega.ca_certificates
