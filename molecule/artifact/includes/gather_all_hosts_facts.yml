@@ -1,0 +1,10 @@
+# gather_all_hosts_facts.yml
+
+- name: Gather all hosts facts
+  loop: "{{ groups['all'] }}"
+  loop_control:
+    loop_var: server
+  when: hostvars[server]['ansible_default_ipv4'] is not defined
+  delegate_to: "{{ server }}"
+  delegate_facts: yes
+  setup:
