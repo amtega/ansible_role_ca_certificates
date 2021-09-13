@@ -6,6 +6,11 @@ driver:
   name: docker
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/../resources/linters.sh"
 platforms:
+  - name: "http-server-${INSTANCE_UUID:-1}"
+    image: centos:8
+    exposed_ports: ['8000']
+    groups:
+      - molecule_prepare_hosts
   - name: "centos7-${INSTANCE_UUID:-1}"
     image: centos:7
     groups:
@@ -38,8 +43,11 @@ provisioner:
       action_plugins: $PWD/action_plugins
   inventory:
     hosts:
-      molecule_hosts:
+      all:
         vars:
+          certificates_host: "{{ groups['molecule_prepare_hosts'] | first }}"
+          certificates_host_ip: >-
+            {{ hostvars[certificates_host].ansible_default_ipv4.address }}
           ca_certificates_artifact_defaults:
             no_log: no
           ca_certificates:
@@ -51,20 +59,20 @@ provisioner:
               state: present
               priority: high
               artifact:
-                type: https
-                host: https://cacerts.digicert.com
+                type: http
+                host: http://{{ certificates_host_ip }}:8000
                 path: /
-                file: RapidSSLTLSDVRSAMixedSHA2562020CA-1.crt.pem
+                file: mozilla.org.pem
 
             - alias: www.debian.org
               description: Debian
               state: present
               priority: low
               artifact:
-                type: https
-                host: https://cacerts.digicert.com
+                type: http
+                host: http://{{ certificates_host_ip }}:8000
                 path: /
-                file: DigiCertGlobalRootCA.crt.pem
+                file: www.debian.org.pem
       molecule_hosts_fedora:
         vars:
           ansible_python_interpreter: /usr/bin/python3
