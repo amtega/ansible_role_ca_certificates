@@ -45,6 +45,9 @@ platforms:
       - molecule_hosts_fedora_34
 provisioner:
   name: ansible
+  playbooks:
+    cleanup: ../resources/cleanup.yml
+    side_effect: ../resources/side_effect.yml
   config_options:
     defaults:
       callback_enabled: profile_tasks
