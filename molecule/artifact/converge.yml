@@ -2,6 +2,8 @@
 
 - name: Converge
   hosts: molecule_hosts
-  gather_facts: no
-  roles:
-    - amtega.ca_certificates
+  gather_facts: yes
+  tasks:
+    - name: Execute role amtega.ca_certificates
+      include_role:
+        name: amtega.ca_certificates
