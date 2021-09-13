@@ -40,6 +40,8 @@ provisioner:
     hosts:
       molecule_hosts:
         vars:
+          ca_certificates_artifact_defaults:
+            no_log: no
           ca_certificates:
             - description: Mozilla
               # this test needs alias to be extracted from

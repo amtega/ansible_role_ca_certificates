@@ -40,9 +40,14 @@ provisioner:
     hosts:
       molecule_hosts:
         vars:
+          ca_certificates_artifact_defaults:
+            no_log: no
           ca_certificates:
-            - alias: mozilla
-              description: Mozilla
+            - description: Mozilla
+              # this test needs alias to be extracted from
+              #   `openssl x509 -inform PEM -noout -alias`
+              # for verification to work
+              alias: mozilla.org
               state: present
               priority: high
               artifact:
@@ -51,8 +56,8 @@ provisioner:
                 path: /
                 file: RapidSSLTLSDVRSAMixedSHA2562020CA-1.crt.pem
 
-            - alias: digicert
-              description: DigiCert
+            - alias: www.debian.org
+              description: Debian
               state: present
               priority: low
               artifact:
