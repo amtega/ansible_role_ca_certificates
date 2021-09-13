@@ -1,0 +1,32 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  pre_tasks:
+    - name: Gather facts from all hosts
+      include_tasks: includes/gather_all_hosts_facts.yml
+  tasks:
+    - name: Add openssl command
+      yum:
+        name: openssl
+        state: present
+
+    - name: Check certificate alias in ca-bundle.trust.crt
+      shell: >-
+        cat /etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt
+        | awk -v cmd='openssl x509 -inform PEM -noout -alias'
+        '/BEGIN/{close(cmd)};{print | cmd}'
+      register: certificate_check_result
+      tags:
+        - skip_ansible_lint
+
+    - name: Assert certificate alias in ca-bundle.trust.crt
+      loop: "{{ ca_certificates }}"
+      loop_control:
+        loop_var: cert
+        label: "{{ cert['alias'] }}"
+      assert:
+        that: "(cert.alias in certificate_check_result.stdout) | bool"
+        fail_msg: "❌ {{ cert.alias }} not found in ca-bundle.trust.crt"
+        success_msg: "✅ {{ cert.alias }} in ca-bundle.trust.crt"
