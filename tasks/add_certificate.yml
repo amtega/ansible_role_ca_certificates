@@ -1,7 +1,39 @@
-- name: Add certificates to system anchors dir
+- name: Add certificates from pem value to system anchors dir
+  when: "'pem' in cert"
   copy:
     dest: "{{ source }}/{{ cert.alias }}.pem"
     content: "{{ cert.pem }}"
     mode: '0600'
-  register: ca_certificates_add_result
   notify: rebuild certificates
+
+- name: Add certificates from artifact to system anchors dir
+  when: >-
+    'pem' not in cert
+    and 'artifact' in cert
+  vars:
+    override:
+      id: "ca_certificate_{{ cert.alias }}"
+      dest: "{{ source }}"
+      dest_file: "{{ cert.alias }}.pem"
+      mode: '0600'
+    artifact: >-
+      {{  ca_certificates_artifact_defaults
+          | default({})
+          | combine(cert.artifact)
+          | combine(override) }}
+  include_role:
+    name: amtega.artifact
+
+- name: Trigger certificate rebuild when adding pem artifact
+  command: /bin/true
+  when:
+    - "'pem' not in cert"
+    - "'artifact' in cert"
+    - artifact_result is defined
+    - >-
+      artifact_result.values()
+      | select("changed")
+      | list
+      | length > 0
+  notify:
+    - rebuild certificates
