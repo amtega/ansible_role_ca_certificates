@@ -2,6 +2,14 @@
 
 dependency:
   name: galaxy
+  enabled: yes
+  options:
+    ignore-certs: yes
+    ignore-errors: yes
+    role-file: >-
+      ${MOLECULE_SCENARIO_DIRECTORY}/../resources/requirements.yml
+    requirements-file: >-
+      ${MOLECULE_SCENARIO_DIRECTORY}/../resources/requirements.yml
 driver:
   name: docker
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/../resources/linters.sh"
