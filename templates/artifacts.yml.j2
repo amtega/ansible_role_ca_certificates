@@ -1,0 +1,28 @@
+{% set certs = ca_certificates_managed
+              | selectattr("state", "equalto", "present")
+              | selectattr("pem", "undefined")
+              | selectattr("artifact", "defined")
+              | list  %}
+
+{% for cert in certs %}
+
+{% if cert.priority | default("low") == "high" %}
+{% set source = ca_certificates_high_priority_anchors_dir %}
+{% else %}
+{% set source = ca_certificates_low_priority_anchors_dir %}
+{% endif %}
+
+{% set overrides = { "id": "ca_certificate_" + cert.alias,
+                     "dest": source,
+                     "dest_file":  cert.alias + ".pem",
+                     "mode": "0600",
+                     "no_log": ca_certificates_no_log
+                   } %}
+
+- {{ ca_certificates_artifact_defaults
+     | combine(cert.artifact)
+     | combine(overrides)
+     | to_json }}
+{% else %}
+[]
+{% endfor %}
