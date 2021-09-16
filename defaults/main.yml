@@ -12,16 +12,13 @@
 #   state: present                   # State can be present or absent
 #   priority: high                   # Priorioty of the certifcate. Can be
 #                                    # high or low. This determines where the
-#                                    # PEM file will be placed on filesystem
-#   # Certificate content in PEM format, could be ONE of this options:
-#   #   1️⃣ inline: Using "pem" variable
-#   #   2️⃣ using an aartifact: Using "artifact" variable
-#   pem: |                           # 1️⃣ Inline certificate in PEM format
+#                                    # PEM file will be placed on filesystem#
+#   pem: |                           # Inline certificate in PEM format
 #     -----BEGIN CERTIFICATE-----
 #     ...
 #     -----END CERTIFICATE-----
 #
-#   artifact:                         # 2️⃣ File artifact containing certificate
+#   artifact:                         # File artifact containing certificate
 #     type: https
 #     host: https://example.com
 #     path: /

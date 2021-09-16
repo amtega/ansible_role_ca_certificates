@@ -1,30 +1,52 @@
 ---
 # Role tasks
 
-- name: Setup certificates
-  vars:
-    ca_certificates_managed: >-
-      {{ (ca_certificates_load_from_hostvars
-          and not ca_certificates_hostvars_certs is string)
-          | ternary([ ca_certificates_hostvars_certs ] | flatten
-                    + ca_certificates,
-                    ca_certificates) }}
-    source: >-
-      {{ (cert.priority | default("low") == "high")
-         | ternary(ca_certificates_high_priority_anchors_dir,
-                   ca_certificates_low_priority_anchors_dir) }}
-  block:
-    - name: Add certificates to system anchors dir
+- block:
+    - name: Add certificate from pem value to system anchors dir
+      copy:
+        dest: "{{ ca_certificates_source }}/{{ cert.alias }}.pem"
+        content: "{{ cert.pem }}"
+        mode: '0600'
+      notify: rebuild certificates
+      register: ca_certificates_pem_result
       loop: >-
         {{ ca_certificates_managed
            | selectattr("state", "equalto", "present")
+           | selectattr("pem", "defined")
            | list }}
       loop_control:
         loop_var: cert
         label: "{{ cert.alias }}"
-      include_tasks: add_certificate.yml
+
+    - name: Add certificates from artifact to system anchors dir
+      include_role:
+        name: amtega.artifact
+      loop: >-
+        {{ ca_certificates_managed
+           | selectattr("state", "equalto", "present")
+           | selectattr("pem", "undefined")
+           | selectattr("artifact", "defined")
+           | list }}
+      loop_control:
+        loop_var: cert
+        label: "{{ cert.alias }}"
+      vars:
+        override:
+          id: "ca_certificate_{{ cert.alias }}"
+          dest: "{{ ca_certificates_source }}"
+          dest_file: "{{ cert.alias }}.pem"
+          mode: '0600'
+        artifact: >-
+          {{ ca_certificates_artifact_defaults
+             | default({})
+             | combine(cert.artifact)
+             | combine(override) }}
 
     - name: Remove certificates from system anchors dir
+      file:
+        path: "{{ ca_certificates_source }}/{{ cert.alias }}.pem"
+        state: absent
+      register: ca_certificates_pem_remove_result
       loop: >-
         {{ ca_certificates_managed
            | selectattr("state", "equalto", "absent")
@@ -32,10 +54,36 @@
       loop_control:
         loop_var: cert
         label: "{{ cert.alias }}"
-      file:
-        path: "{{ source }}/{{ cert.alias }}.pem"
-        state: absent
       notify: rebuild certificates
 
+    - name: Trigger certificate rebuild
+      command: /bin/true
+      when: >-
+        ca_certificates_pem_result.results
+        | select("changed")
+        | list
+        | length > 0
+        or (artifact_result | default({})).values()
+           | select("changed")
+           | list
+           | length > 0
+        or ca_certificates_pem_result.results
+           | select("changed")
+           | list
+           | length > 0
+      notify:
+        - rebuild certificates
+
+  vars:
+    ca_certificates_managed: >-
+      {{ (ca_certificates_load_from_hostvars
+          and not ca_certificates_hostvars_certs is string)
+          | ternary([ ca_certificates_hostvars_certs ] | flatten
+                    + ca_certificates,
+                    ca_certificates) }}
+    ca_certificates_source: >-
+      {{ (cert.priority | default("low") == "high")
+         | ternary(ca_certificates_high_priority_anchors_dir,
+                   ca_certificates_low_priority_anchors_dir) }}
   tags:
     - role::ca_certificates
