@@ -50,3 +50,8 @@ ca_certificates_load_from_hostvars: yes
 # `ca_certificates_load_from_hostvars` is true
 
 ca_certificates_hostvars_pattern: "cert_.*"
+
+# Hide sensitive information (default is no because certificates usually
+# doesn't have sensitive info)
+
+ca_certificates_no_log: no

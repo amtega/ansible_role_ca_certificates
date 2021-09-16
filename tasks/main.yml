@@ -17,30 +17,14 @@
       loop_control:
         loop_var: cert
         label: "{{ cert.alias }}"
+      no_log: "{{ ca_certificates_no_log | bool }}"
 
     - name: Add certificates from artifact to system anchors dir
       include_role:
         name: amtega.artifact
-      loop: >-
-        {{ ca_certificates_managed
-           | selectattr("state", "equalto", "present")
-           | selectattr("pem", "undefined")
-           | selectattr("artifact", "defined")
-           | list }}
-      loop_control:
-        loop_var: cert
-        label: "{{ cert.alias }}"
       vars:
-        override:
-          id: "ca_certificate_{{ cert.alias }}"
-          dest: "{{ ca_certificates_source }}"
-          dest_file: "{{ cert.alias }}.pem"
-          mode: '0600'
-        artifact: >-
-          {{ ca_certificates_artifact_defaults
-             | default({})
-             | combine(cert.artifact)
-             | combine(override) }}
+        artifact_list: >-
+          {{ lookup("template", "artifacts.yml.j2") | from_yaml }}
 
     - name: Remove certificates from system anchors dir
       file:
