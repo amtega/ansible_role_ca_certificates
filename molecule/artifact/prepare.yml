@@ -25,7 +25,7 @@
     - name: Publish certificate examples via http port 8000
       vars:
         http_server_invocation: >-
-          {{ (ansible_facts.distribution | lower in ["centos", "rhel"]
+          {{ (ansible_facts.distribution | lower in ["centos", "redhat"]
           and ansible_facts.distribution_major_version is version("7", "="))
           | ternary('python2 -m SimpleHTTPServer', 'python3 -m http.server') }}
       shell: "nohup {{ http_server_invocation }} &"
