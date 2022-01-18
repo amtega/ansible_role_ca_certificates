@@ -27,6 +27,7 @@
         loop_var: cert
         label: "{{ cert['alias'] }}"
       assert:
+        quiet: yes
         that: "(cert.alias in certificate_check_result.stdout) | bool"
         fail_msg: "❌ {{ cert.alias }} not found in ca-bundle.trust.crt"
         success_msg: "✅ {{ cert.alias }} in ca-bundle.trust.crt"

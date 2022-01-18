@@ -16,6 +16,7 @@
 
     - name: Check that certificates were removed
       assert:
+        quiet: yes
         that:
           - not check_certificate1_result.stat.exists
           - not check_certificate1_result.stat.exists
