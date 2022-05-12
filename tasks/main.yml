@@ -30,6 +30,7 @@
       file:
         path: "{{ ca_certificates_source }}/{{ cert.alias }}.pem"
         state: absent
+      when: not ca_certificates_preserve_absent | bool
       register: ca_certificates_pem_remove_result
       loop: >-
         {{ ca_certificates_managed
@@ -57,7 +58,6 @@
            | length > 0
       notify:
         - rebuild certificates
-
   vars:
     ca_certificates_managed: >-
       {{ (ca_certificates_load_from_hostvars
