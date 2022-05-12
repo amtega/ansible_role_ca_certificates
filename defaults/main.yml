@@ -51,6 +51,10 @@ ca_certificates_load_from_hostvars: yes
 
 ca_certificates_hostvars_pattern: "cert_.*"
 
+# If set to yes the role will not remove absent certificates
+
+ca_certificates_preserve_absent: no
+
 # Hide sensitive information (default is no because certificates usually
 # doesn't have sensitive info)
 
